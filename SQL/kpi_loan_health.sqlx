@@ -1,0 +1,10 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "kpi_loan_health", dependencies: ["loans_current", "loanpayments_current"] }
+SELECT l.LoanID,l.CustomerID,l.BranchID,l.LoanType,l.Status,
+ SAFE_CAST(l.PrincipalAmount AS NUMERIC) AS principal_amount,
+ COUNT(p.PaymentID) AS payment_count,
+ SUM(SAFE_CAST(p.AmountDue AS NUMERIC)) AS amount_due,
+ SUM(SAFE_CAST(p.AmountPaid AS NUMERIC)) AS amount_paid,
+ COUNTIF(p.PaymentStatus IN ('Late','Missed')) AS late_or_missed_count
+FROM `retail-omkar-cli-org-dev.bankeva_silver.loans_current` l
+LEFT JOIN `retail-omkar-cli-org-dev.bankeva_silver.loanpayments_current` p ON l.LoanID=p.LoanID
+GROUP BY 1,2,3,4,5,6

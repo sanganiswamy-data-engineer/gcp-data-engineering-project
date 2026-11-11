@@ -1,0 +1,10 @@
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "customers"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "accounts"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "branches"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "employees"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "accounttypes"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "cards"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "transactiontypes"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "transactions"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "loans"});
+declare({database: "retail-omkar-cli-org-dev", schema: "bankeva_bronze", name: "loanpayments"});

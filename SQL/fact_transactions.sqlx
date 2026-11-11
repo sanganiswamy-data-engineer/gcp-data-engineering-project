@@ -1,0 +1,7 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "fact_transactions", dependencies: ["transactions_current", "accounts_scd2"] }
+SELECT t.TransactionID,t.AccountID,a.CustomerID,a.AccountTypeID,t.TransactionTypeID,
+ SAFE_CAST(t.TransactionDateTime AS TIMESTAMP) AS TransactionDateTime,
+ SAFE_CAST(t.Amount AS NUMERIC) AS Amount,t.Currency,t.Channel,t.MerchantCategory,t.Description,
+ SAFE_CAST(t.BalanceAfter AS NUMERIC) AS BalanceAfter,t.EmployeeID
+FROM `retail-omkar-cli-org-dev.bankeva_silver.transactions_current` t
+LEFT JOIN `retail-omkar-cli-org-dev.bankeva_silver.accounts_scd2` a ON t.AccountID=a.AccountID AND a.is_current

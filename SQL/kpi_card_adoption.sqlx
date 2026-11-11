@@ -1,0 +1,6 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "kpi_card_adoption", dependencies: ["cards_current", "dim_account"] }
+SELECT a.CustomerID,COUNT(DISTINCT a.AccountID) AS account_count,
+ COUNT(DISTINCT IF(c.Status='Active',c.CardID,NULL)) AS active_cards
+FROM `retail-omkar-cli-org-dev.bankeva_gold.dim_account` a
+LEFT JOIN `retail-omkar-cli-org-dev.bankeva_silver.cards_current` c ON a.AccountID=c.AccountID
+WHERE a.is_current GROUP BY 1

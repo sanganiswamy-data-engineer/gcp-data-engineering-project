@@ -1,0 +1,7 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "kpi_inactive_accounts", dependencies: ["dim_account", "fact_transactions"] }
+WITH last_tx AS (SELECT AccountID, MAX(TransactionDateTime) AS last_transaction FROM `retail-omkar-cli-org-dev.bankeva_gold.fact_transactions` GROUP BY 1),
+ anchor AS (SELECT MAX(TransactionDateTime) AS max_transaction FROM `retail-omkar-cli-org-dev.bankeva_gold.fact_transactions`)
+SELECT a.AccountID,a.CustomerID,a.Status,lt.last_transaction
+FROM `retail-omkar-cli-org-dev.bankeva_gold.dim_account` a
+LEFT JOIN last_tx lt ON a.AccountID=lt.AccountID CROSS JOIN anchor
+WHERE a.is_current AND (lt.last_transaction IS NULL OR lt.last_transaction < TIMESTAMP_SUB(anchor.max_transaction,INTERVAL 90 DAY))

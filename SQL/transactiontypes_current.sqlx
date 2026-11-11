@@ -1,0 +1,4 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_silver", name: "transactiontypes_current", dependencies: ["transactiontypes"] }
+SELECT * EXCEPT(source_file,source_sha256,record_sha256)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze.transactiontypes`
+QUALIFY ROW_NUMBER() OVER (PARTITION BY `TransactionTypeID` ORDER BY source_day DESC, record_sha256 DESC) = 1

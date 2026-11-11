@@ -1,0 +1,2 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "kpi_suspicious_transactions", dependencies: ["fact_transactions"] }
+SELECT * FROM `retail-omkar-cli-org-dev.bankeva_gold.fact_transactions` WHERE ABS(Amount)>=100000

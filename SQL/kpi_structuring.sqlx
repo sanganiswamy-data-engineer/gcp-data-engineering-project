@@ -1,0 +1,10 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "kpi_structuring", dependencies: ["fact_transactions"] }
+WITH near AS (
+ SELECT CustomerID,AccountID,TransactionID,TransactionDateTime,Amount,Channel
+ FROM `retail-omkar-cli-org-dev.bankeva_gold.fact_transactions`
+ WHERE Amount BETWEEN 9000 AND 10000 AND Channel IN ('Branch','ATM') AND CustomerID IS NOT NULL
+), rolling AS (
+ SELECT *, COUNT(*) OVER (PARTITION BY CustomerID ORDER BY UNIX_SECONDS(TransactionDateTime)
+ RANGE BETWEEN 604800 PRECEDING AND CURRENT ROW) AS transactions_in_7_days FROM near
+)
+SELECT * FROM rolling WHERE transactions_in_7_days>1

@@ -1,0 +1,2 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "dim_account", dependencies: ["accounts_scd2"] }
+SELECT * FROM `retail-omkar-cli-org-dev.bankeva_silver.accounts_scd2`

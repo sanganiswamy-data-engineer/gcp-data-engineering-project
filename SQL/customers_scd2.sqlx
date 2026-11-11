@@ -1,0 +1,18 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_silver", name: "customers_scd2", dependencies: ["customers"] }
+WITH daily AS (
+ SELECT *, TO_HEX(SHA256(TO_JSON_STRING(STRUCT(`FirstName`, `LastName`, `DateOfBirth`, `NationalInsuranceNumber`, `Email`, `Phone`, `AddressLine1`, `Town`, `County`, `PostCode`, `CustomerSegment`, `KYCStatus`, `CreatedDate`)))) AS attribute_hash
+ FROM `retail-omkar-cli-org-dev.bankeva_bronze.customers`
+ QUALIFY ROW_NUMBER() OVER (PARTITION BY `CustomerID`, source_day ORDER BY record_sha256) = 1
+), compared AS (
+ SELECT *, LAG(attribute_hash) OVER (PARTITION BY `CustomerID` ORDER BY source_day) AS previous_hash FROM daily
+), changes AS (
+ SELECT * EXCEPT(previous_hash) FROM compared WHERE previous_hash IS NULL OR previous_hash != attribute_hash
+), history AS (
+ SELECT *, LEAD(source_day) OVER (PARTITION BY `CustomerID` ORDER BY source_day) AS next_day FROM changes
+)
+SELECT * EXCEPT(next_day, source_file, source_sha256, record_sha256, attribute_hash),
+ source_day AS effective_from_day,
+ next_day AS effective_to_day,
+ next_day IS NULL AS is_current,
+ TO_HEX(SHA256(CONCAT(CAST(`CustomerID` AS STRING), '|', CAST(source_day AS STRING)))) AS version_key
+FROM history

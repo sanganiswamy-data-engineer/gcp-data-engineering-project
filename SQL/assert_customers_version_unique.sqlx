@@ -1,0 +1,3 @@
+config { type: "assertion", dependencies: ["customers_scd2"] }
+SELECT version_key,COUNT(*) AS duplicate_count FROM `retail-omkar-cli-org-dev.bankeva_silver.customers_scd2`
+GROUP BY 1 HAVING COUNT(*)>1

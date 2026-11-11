@@ -1,0 +1,3 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "kpi_dq_summary", dependencies: [] }
+SELECT entity_name,reason,COUNT(*) AS rejected_count
+FROM `retail-omkar-cli-org-dev.bankeva_control.quarantine_audit` GROUP BY 1,2

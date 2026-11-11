@@ -1,0 +1,5 @@
+config { type: "assertion", dependencies: ["accounts_scd2"] }
+WITH x AS (SELECT `AccountID`,effective_from_day,effective_to_day,
+ LAG(effective_to_day) OVER (PARTITION BY `AccountID` ORDER BY effective_from_day) AS previous_to
+ FROM `retail-omkar-cli-org-dev.bankeva_silver.accounts_scd2`)
+SELECT * FROM x WHERE previous_to IS NOT NULL AND effective_from_day<previous_to

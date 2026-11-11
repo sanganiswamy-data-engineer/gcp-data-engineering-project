@@ -1,0 +1,3 @@
+config { type: "assertion", dependencies: ["customers_scd2"] }
+SELECT `CustomerID`,COUNT(*) AS duplicate_count FROM `retail-omkar-cli-org-dev.bankeva_silver.customers_scd2`
+WHERE is_current GROUP BY 1 HAVING COUNT(*)>1

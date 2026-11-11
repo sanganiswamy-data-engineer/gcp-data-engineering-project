@@ -1,0 +1,4 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_silver", name: "employees_current", dependencies: ["employees"] }
+SELECT * EXCEPT(source_file,source_sha256,record_sha256)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze.employees`
+QUALIFY ROW_NUMBER() OVER (PARTITION BY `EmployeeID` ORDER BY source_day DESC, record_sha256 DESC) = 1

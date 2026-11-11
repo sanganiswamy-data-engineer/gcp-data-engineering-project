@@ -1,0 +1,4 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "kpi_top_customers", dependencies: ["fact_transactions"] }
+SELECT CustomerID, COUNT(*) AS transaction_count, ROUND(SUM(ABS(Amount)),2) AS transaction_volume
+FROM `retail-omkar-cli-org-dev.bankeva_gold.fact_transactions` WHERE CustomerID IS NOT NULL
+GROUP BY CustomerID ORDER BY transaction_volume DESC LIMIT 5

@@ -1,0 +1,7 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "customer_360", dependencies: ["dim_customer", "dim_account"] }
+SELECT c.CustomerID,c.FirstName,c.LastName,c.CustomerSegment,c.KYCStatus,
+ COUNT(a.AccountID) AS account_count, SUM(SAFE_CAST(a.CurrentBalance AS NUMERIC)) AS total_balance
+FROM `retail-omkar-cli-org-dev.bankeva_gold.dim_customer` c
+LEFT JOIN `retail-omkar-cli-org-dev.bankeva_gold.dim_account` a ON a.CustomerID=c.CustomerID AND a.is_current
+WHERE c.is_current
+GROUP BY 1,2,3,4,5

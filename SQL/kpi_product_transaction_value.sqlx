@@ -1,0 +1,5 @@
+config { type: "table", database: "retail-omkar-cli-org-dev", schema: "bankeva_gold", name: "kpi_product_transaction_value", dependencies: ["fact_transactions", "accounttypes_current"] }
+SELECT f.AccountTypeID,t.TypeName, COUNT(*) AS transaction_count, ROUND(SUM(ABS(f.Amount)),2) AS transaction_value
+FROM `retail-omkar-cli-org-dev.bankeva_gold.fact_transactions` f
+LEFT JOIN `retail-omkar-cli-org-dev.bankeva_silver.accounttypes_current` t ON f.AccountTypeID=t.AccountTypeID
+GROUP BY 1,2
