@@ -1,0 +1,37 @@
+DR|ACCOUNTS
+AccountID|CustomerID|BranchID|AccountTypeID|SortCode|AccountNumber|OpenDate|CloseDate|Status|CurrentBalance|Currency
+1|280|4|2|05-52-03|31272427|2019-01-10||Active|20601.64|GBP
+2|326|1|3|20-84-48|99063777|2021-12-21||Active|27647.81|GBP
+3|54|4|5|05-53-62|08038980|2019-04-04|2023-04-06|Closed|36958.62|GBP
+4|73|5|1|16-29-66|55439545|2016-11-01||Active|25225.75|GBP
+5|191|8|1|30-64-17|85525640|2017-01-23||Active|28740.25|GBP
+6|39|1|4|20-16-45|39148093|2021-12-25||Active|9954.61|GBP
+7|162|7|3|55-34-29|10024377|2017-08-20||Active|37150.60|GBP
+8|70|2|2|01-57-59|42148834|2025-05-07||Active|15477.15|GBP
+9|275|6|2|83-59-33|16094525|2020-09-17||Active|3481.47|GBP
+10|352|5|5|16-41-18|12242388|2016-08-21||Active|27038.42|GBP
+11|183|7|5|55-38-33|23336132|2018-10-31||Active|1229.57|GBP
+12|208|8|5|30-31-12|62014395|2018-11-09||Active|-3442.63|GBP
+13|72|2|1|01-99-28|17544302|2020-06-01||Active|7569.15|GBP
+483|371|1|3|20-90-11|70112233|2026-08-29||Active|2500.00|GBP
+484|372|5|2|16-88-44|70115566|2026-08-29||Active|7500.00|GBP
+FTR|RECORDCOUNT|15
+
+HDR|CUSTOMERS
+CustomerID|FirstName|LastName|DateOfBirth|NationalInsuranceNumber|Email|Phone|AddressLine1|Town|County|PostCode|CustomerSegment|KYCStatus|CreatedDate
+1|Jamie|Gould|1951-07-05|RL475435C|yanderson@example.com|+442074960784|184 Griffiths Mews|South Paul|South Yorkshire|WS4V 8EN|Retail|Verified|2024-08-28
+2|Kathleen|John|1951-01-09|CH560086B|sheilawatson@example.net|0113 496 0957|5 Smith Garden|North Danielleland|South Yorkshire|G2S 8GL|Premier|Pending|2020-11-30
+3|Lynda|Davison|1955-01-12|YK717870C|graemematthews@example.net|+44(0)28 9018578|Flat 3 Philip Junction|New Andreabury|Greater Manchester|L0B 3DB|Retail|Verified|2024-11-14
+4|Steven|Lewis|1959-07-26|CJ957492C|steven.lewis@day2.example.com|+44 909 879 1234|63 Lewis Shoals|Nixonchester|Kent|WN01 6PE|Private|Pending|2017-08-04
+5|Karl|Wilkinson|1950-02-28|TG277746B|rickyhall@example.org|+44 151 496 2222|3 Jane Oval|Dobsonfurt|Essex|G6 6LT|Private|Expired|2018-01-10
+6|Bethan|Andrews|2008-04-26|SZ418801C|bethan.andrews@day2.example.com|01144960980|Flat 0 Kerr Walk|North Natasha|Essex|G1 3RE|Retail|Expired|2025-11-06
+7|Shirley|Smith|1981-01-21|EG657924B|burtoncarole@example.net|+44 191 496 7777|Flat 46 Vanessa Rue|Claremouth|Bristol|B7 1XH|SmallBusiness|Verified|2020-08-28
+8|Wayne|McDonald|2000-07-12|TX263626A|laurenkirby@example.com|+44(0)808 157 0849|841 Arthur Crescent|Lake Andreaberg|West Yorkshire|GL9 5HL|Private|Pending|2020-08-26
+9|Tony|Howe|1998-03-01|NE307757D|thomsonmartyn@example.org|0113 496 0524|44 River View|Leedsville|South Yorkshire|LS1 4ZZ|Premier|Verified|2018-04-20
+10|Simon|Sutton|1954-11-30|LX798975B|dorothywebb@example.net|+44(0)909 8790692|2 Jennings Street|Victoriabury|Tyne and Wear|CW1 0UJ|Retail|Verified|2017-01-02
+11|Kelly|Stone|1996-06-04|JG392077B|francisbrown@example.org||22 King Street|New Kellytown|Tyne and Wear|BD3 8RT|Retail|Expired|2021-11-07
+12|Denise|Clark|2001-10-17|PM251083A|conorthomas@example.com|0113 496 0883|Studio 1 Johnson Shore|Lake Cliffordhaven|Essex|SG6 6NX|SmallBusiness|Verified|2016-02-23
+13|Emily|King|1966-05-30|CY803035B|amberpearce@example.com|+441914960044|99 Hall Mills|New Elaine|Merseyside|DA1M 1JN|Private|Pending|2017-04-21
+371|Aarav|Shah|1991-09-14|QX778899C|aarav.shah@example.com|+441612223344|18 Willow Lane|Manchester|Greater Manchester|M15 6AB|Premier|Verified|2026-08-29
+372|Sofia|Martin|1984-06-21|QX889900D|sofia.martin@example.com|+442033445566|42 Park Road|Bristol|Bristol|BS1 7XY|Retail|Pending|2026-08-29
+FTR|RECORDCOUNT|15
