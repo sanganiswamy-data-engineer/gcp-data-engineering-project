@@ -1,0 +1,12 @@
+@ENTITY|Customers
+CustomerID|Name|Email|Phone|BranchID
+101|Asha Rao|asha.new@example.test|9000000101|B01
+369|Nina Kapoor|nina@example.test|9000000369|B01
+370|Omar Ali|omar@example.test|9000000370|B02
+@END
+@ENTITY|Accounts
+AccountID|CustomerID|ProductID|BranchID|Currency|OpenDate|CloseDate|Balance|SortCode
+201|101|P01|B01|GBP|2025-01-01||27000|110001
+481|369|P01|B01|GBP|2026-10-01||1000|110003
+482|370|P02|B02|GBP|2026-10-01||500|220002
+@END

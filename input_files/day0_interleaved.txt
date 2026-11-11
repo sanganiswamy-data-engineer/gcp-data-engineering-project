@@ -1,0 +1,41 @@
+@ENTITY|Customers
+CustomerID|Name|Email|Phone|BranchID
+101|Asha Rao|asha@example.test|9000000101|B01
+102|Ravi Shah|ravi@example.test|9000000102|B02
+103|Meera Das|meera@example.test|9000000103|B01
+@END
+@ENTITY|Accounts
+AccountID|CustomerID|ProductID|BranchID|Currency|OpenDate|CloseDate|Balance|SortCode
+201|101|P01|B01|GBP|2025-01-01||25000|110001
+202|102|P02|B02|GBP|2025-02-01||-750|220001
+203|103|P01|B01|GBP|2025-03-01||8000|110002
+@END
+@ENTITY|Transactions
+TransactionID|AccountID|TxnDate|Amount|Currency|Channel|Category
+T001|201|2026-07-01|150000|GBP|Online|Transfer
+T002|201|2026-07-03|98000|GBP|ATM|Deposit
+T003|201|2026-07-03|97000|GBP|ATM|Deposit
+T004|202|2026-08-01|500|GBP|Branch|Withdrawal
+T005|203|2026-09-02|700|USD|Online|Transfer
+T005|203|2026-09-02|700|USD|Online|Transfer
+T006|201|2024-12-01|200|GBP|Online|Transfer
+@END
+@ENTITY|Products
+ProductID|ProductName|OverdraftLimit
+P01|Savings|0
+P02|Current|500
+@END
+@ENTITY|Branches
+BranchID|BranchName|SortPrefix
+B01|Central|11
+B02|North|22
+@END
+@ENTITY|Loans
+LoanID|AccountID|Outstanding|OverdueDays
+L01|202|12000|45
+@END
+@ENTITY|Cards
+CardID|CustomerID|Status
+C01|101|Active
+C02|102|Inactive
+@END
