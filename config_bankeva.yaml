@@ -1,0 +1,31 @@
+gcp:
+  project_id: retail-omkar-cli-org-dev
+  region: us-central1
+storage:
+  source_bucket: hackathon_hyderabad_swara
+  quarantine_bucket: bankeva-quarantine-retail-omkar-cli-org-dev
+  code_prefix: gs://hackathon_hyderabad_swara/scripts
+  dataproc_code_prefix: gs://hackathon_hyderabad_swara/scripts
+  dataflow_temp: gs://hackathon_hyderabad_swara/dataflow/temp
+  dataflow_staging: gs://hackathon_hyderabad_swara/dataflow/staging
+  dataproc_temp_bucket: hackathon_hyderabad_swara
+bigquery:
+  bronze_dataset: ss_hack_bronze
+  control_dataset: ss_hack_control
+  silver_dataset: ss_hack_silver
+  gold_dataset: hack_gold
+dataproc:
+  cluster_name: hackathon-hyderabad-dataproc
+scripts:
+  beam_ingestion: ingestion_dataflow_parameterized.py
+  beam_requirements: requirements_dataflow.txt
+  bronze_to_silver: scripts_bronze_silver_parameterized.py
+  silver_to_gold: silver_to_gold_all_10_scd2_parameterized.py
+pipeline:
+  default_day: 2
+  retries: 1
+  retry_delay_minutes: 5
+  input_files:
+  - day0/hack149_ws01_Source_data_EvalDB_Day0_Interleaved.txt
+  - day1/hack149_ws01_Source_data_EvalDB_Day1_Interleaved.txt
+  - day2/hack149_ws01_Source_data_EvalDB_Day2_Interleaved.txt

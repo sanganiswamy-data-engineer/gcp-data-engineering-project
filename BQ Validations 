@@ -1,0 +1,737 @@
+
+
+Project ID	dbs-data-ai-ai-core
+Project number	237970181400 (from earlier Dataproc staging path; verify)
+Region	us-central1
+GCS bucket	hackathon_hyderabad
+Bronze dataset	hackathon_hyd_hack150_ws01_bronze
+Silver dataset	hackathon_hyd_hack150_ws01_silver
+Gold dataset	hackathon_hyd_hack150_ws01_gold
+
+Control / audit dataset	bankeva_control
+Cloud Composer environment	hackathon-hyderabad-composer
+Airflow DAG ID	swamy_hack150_dataflow
+Dataproc cluster name	hackathon-hyderabad-dataproc
+
+
+validations : Day 0 Run .sh and check the audit tables and bronze/silver/gold tables
+
+Bronze Day 0 :
+
+SELECT
+  source_day,
+  COUNT(*) AS total_records
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.accounts`
+GROUP BY source_day
+ORDER BY source_day;
+
+--source_day	total_records
+--0	480
+
+-- check the status of audit table for Day 0: 
+SELECT
+  batch_day,
+  source_uri,
+  accepted,
+  rejected,
+  status
+FROM `retail-omkar-cli-org-dev.bankeva_control_test.file_audit`
+ORDER BY batch_day;
+
+
+--check why rejected  day 0 ?
+
+SELECT
+  entity_name,
+  reason,
+  COUNT(*) AS rejected_count
+FROM `retail-omkar-cli-org-dev.bankeva_control_test.quarantine_audit`
+WHERE batch_day = 0
+GROUP BY entity_name, reason
+ORDER BY rejected_count DESC;
+
+-- Your ten rejected records are all from TRANSACTIONS, with reason CURRENCY_MISMATCH. This means the transaction currency differed from the associated account currency according to your Dataflow validation rule.
+
+
+-- validate bronze data records 
+
+SELECT 'accounts' AS table_name, COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.accounts`
+UNION ALL
+SELECT 'accounttypes', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.accounttypes`
+UNION ALL
+SELECT 'branches', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.branches`
+UNION ALL
+SELECT 'cards', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.cards`
+UNION ALL
+SELECT 'customers', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.customers`
+UNION ALL
+SELECT 'employees', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.employees`
+UNION ALL
+SELECT 'loanpayments', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.loanpayments`
+UNION ALL
+SELECT 'loans', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.loans`
+UNION ALL
+SELECT 'transactions', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.transactions`
+UNION ALL
+SELECT 'transactiontypes', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.transactiontypes`;
+
+
+################################################################################################################
+
+Silver Day 0 
+
+SELECT
+  source_day,
+  COUNT(*) AS total_records,
+  COUNT(DISTINCT AccountID) AS distinct_accounts
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.accounts`
+GROUP BY source_day
+ORDER BY source_day;
+
+-- source_day	total_records	distinct_accounts
+-- 0	480	480
+
+
+-- all check silver tables 
+
+SELECT 'accounts' AS table_name, COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.accounts`
+UNION ALL
+SELECT 'accounttypes', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.accounttypes`
+UNION ALL
+SELECT 'branches', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.branches`
+UNION ALL
+SELECT 'cards', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.cards`
+UNION ALL
+SELECT 'customers', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.customers`
+UNION ALL
+SELECT 'employees', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.employees`
+UNION ALL
+SELECT 'loanpayments', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.loanpayments`
+UNION ALL
+SELECT 'loans', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.loans`
+UNION ALL
+SELECT 'transactions', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.transactions`
+UNION ALL
+SELECT 'transactiontypes', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.transactiontypes`
+ORDER BY table_name;
+
+################################################################################################################
+
+Gold Day 0 :
+
+
+SELECT
+  table_name,
+  table_type,
+  creation_time
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.INFORMATION_SCHEMA.TABLES`
+ORDER BY table_name;
+
+--Check existing Gold accounts for Day 0
+
+SELECT
+  current_row_indicator,
+  version_number,
+  COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+GROUP BY current_row_indicator, version_number
+ORDER BY version_number, current_row_indicator;
+
+-- current_row_indicator	version_number	records
+-- Y	1	480
+
+
+SELECT 'accounts' AS table_name, COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+UNION ALL
+SELECT 'accounttypes', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounttypes`
+UNION ALL
+SELECT 'branches', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.branches`
+UNION ALL
+SELECT 'cards', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.cards`
+UNION ALL
+SELECT 'customers', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.customers`
+UNION ALL
+SELECT 'employees', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.employees`
+UNION ALL
+SELECT 'loanpayments', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.loanpayments`
+UNION ALL
+SELECT 'loans', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.loans`
+UNION ALL
+SELECT 'transactions', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.transactions`
+UNION ALL
+SELECT 'transactiontypes', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.transactiontypes`;
+
+################################################################################################################
+
+Now Run Day 1 : 
+bash run_dataflow.sh 1
+
+and check Check Day 1 audit tables 
+
+################################################################################################################
+
+--Day 1 Audit 
+
+SELECT
+  batch_day,
+  source_uri,
+  accepted,
+  rejected,
+  status
+FROM `retail-omkar-cli-org-dev.bankeva_control_test.file_audit`
+WHERE batch_day = 1
+ORDER BY source_uri;
+
+-- batch_day	source_uri	accepted	rejected	status
+-- 1	gs://hackathon_hyderabad_swara/day1/hack149_ws01_Source_data_EvalDB_Day1_Interleaved.txt	30	0	SUCCESS
+
+--Valdiate Bronze : 
+
+SELECT 'accounts' AS table_name, COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.accounts`
+UNION ALL
+SELECT 'accounttypes', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.accounttypes`
+UNION ALL
+SELECT 'branches', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.branches`
+UNION ALL
+SELECT 'cards', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.cards`
+UNION ALL
+SELECT 'customers', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.customers`
+UNION ALL
+SELECT 'employees', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.employees`
+UNION ALL
+SELECT 'loanpayments', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.loanpayments`
+UNION ALL
+SELECT 'loans', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.loans`
+UNION ALL
+SELECT 'transactions', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.transactions`
+UNION ALL
+SELECT 'transactiontypes', COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.transactiontypes`;
+
+
+--verify Day 1 Bronze
+
+SELECT
+  'accounts' AS table_name,
+  source_day,
+  COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.accounts`
+GROUP BY source_day
+
+UNION ALL
+
+SELECT
+  'customers',
+  source_day,
+  COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.customers`
+GROUP BY source_day
+
+ORDER BY table_name, source_day;
+
+-- table_name	source_day	records
+-- accounts	0	480
+-- accounts	1	15
+-- customers	0	368
+-- customers	1	15
+
+################################################################################################################
+
+
+-- Day 1 Silver data :
+
+
+SELECT
+  'accounts' AS table_name,
+  COUNT(*) AS total_records,
+  COUNT(DISTINCT AccountID) AS distinct_keys,
+  COUNTIF(source_day = 1) AS day1_records
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.accounts`
+UNION ALL
+SELECT
+  'customers',
+  COUNT(*),
+  COUNT(DISTINCT CustomerID),
+  COUNTIF(source_day = 1)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.customers`;
+
+-- table_name	total_records	distinct_keys	day1_records
+-- accounts	482	482	15
+-- customers	370	370	15
+
+################################################################################################################
+-- Day 1 Gold 
+-- Validate Gold SCD Type 2
+
+
+SELECT
+  'accounts' AS table_name,
+  current_row_indicator,
+  version_number,
+  COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+GROUP BY current_row_indicator, version_number
+
+UNION ALL
+
+SELECT
+  'customers',
+  current_row_indicator,
+  version_number,
+  COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.customers`
+GROUP BY current_row_indicator, version_number
+
+ORDER BY table_name, version_number, current_row_indicator;
+
+-- table_name	current_row_indicator	version_number	records
+-- accounts	N	1	10
+-- accounts	Y	1	472
+-- accounts	Y	2	10
+-- customers	N	1	10
+-- customers	Y	1	360
+-- customers	Y	2	10
+
+
+SELECT
+  AccountID,
+  COUNT(*) AS current_records
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+WHERE current_row_indicator = 'Y'
+GROUP BY AccountID
+HAVING COUNT(*) > 1;
+--There is no data to display.
+
+################################################################################################################
+
+--Validate individual account history 
+
+SELECT
+  AccountID,
+  CurrentBalance,
+  version_number,
+  current_row_indicator,
+  row_effective_date,
+  row_expiry_date
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+WHERE AccountID IN (
+  SELECT AccountID
+  FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+  GROUP BY AccountID
+  HAVING COUNT(*) > 1
+)
+ORDER BY AccountID, version_number;
+
+################################################################################################################
+
+--Validate there are no duplicate current records
+
+SELECT
+  'accounts' AS table_name,
+  COUNT(*) AS duplicate_keys
+FROM (
+  SELECT AccountID
+  FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+  WHERE current_row_indicator = 'Y'
+  GROUP BY AccountID
+  HAVING COUNT(*) > 1
+)
+
+UNION ALL
+
+SELECT
+  'customers',
+  COUNT(*)
+FROM (
+  SELECT CustomerID
+  FROM `retail-omkar-cli-org-dev.bankeva_gold_test.customers`
+  WHERE current_row_indicator = 'Y'
+  GROUP BY CustomerID
+  HAVING COUNT(*) > 1
+);
+
+
+################################################################################################################
+
+
+SELECT
+  AccountID,
+  version_number,
+  Status,
+  CloseDate,
+  CurrentBalance,
+  record_hash,
+  current_row_indicator
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+WHERE AccountID IN ('6', '8', '9', '10', '11', '12', '13')
+ORDER BY
+  SAFE_CAST(AccountID AS INT64),
+  version_number;
+
+--   AccountID	version_number	Status	CloseDate	CurrentBalance	record_hash	current_row_indicator
+-- 6	1	Active		9954.61	a106b1338b67c7115eafd233bf334ed7c8d1128c8992e9057d3af232701a81a2	N
+-- 6	2	Active		9954.61	52f6f86a87fd4328692db675c134c7289d76d35c8dafc1f68f92095c9b268821	Y
+-- 8	1	Active		15477.15	fe9351fb45a682e83c86271b649778906fd23aa309368b6a95594a6885765411	N
+-- 8	2	Active		15477.15	ff5374402115e8f6c014db7406063fb189cf3f4f92dd50415b1ac86feff07fcf	Y
+-- 9	1	Active		3481.47	2cacc418ae63c9d616d4d9c434d5bbba89193c878cdcf39af1508c064c035e22	N
+-- 9	2	Closed	2026-06-15	3481.47	a734140ac7a30a580e0e7f54e3d25cfdfd6aacd7fc7e5d1b3726e5dbbc0cf0c6	Y
+-- 10	1	Active		27038.42	6555cbe136350fa212edc8a350e301aade747accdef782e4982a147e0f51edab	N
+-- 10	2	Active		27038.42	071908efed3bc5674dfe5e9490ca413eb692fdc4da9c50102a4b71693c5879c6	Y
+-- 11	1	Active		1229.57	66978dcff3ad69103af491d8a2b7196837fe9de48716b5357651a11cb7c4d39a	N
+-- 11	2	Closed	2026-07-01	1229.57	ce8b83e91f94c7c03ce0d201bd9166d6166ae0819cd3ee725eba973d45b1baab	Y
+-- 12	1	Active		-3442.63	eeacd1833e36aa2d0446379764f774b27c3668fc2cc054d56a4a08d5e1b7a4bd	N
+-- 12	2	Active		-3442.63	84020553606db1de8da236480c355dc5ca950c359a41de1e228bd151e84a8650	Y
+-- 13	1	Active		7569.15	0e01db1ad2ab459f919cb1b3b46fda5e1373e9daab4ba90566d898ce40046696	N
+-- 13	2	Active		7569.15	e1a4e76be7db9cf127c4645988949858fa5fd8522b66ae512cc153b7b0967832	Y
+
+################################################################################################################
+
+
+WITH versions AS (
+  SELECT
+    AccountID,
+    version_number,
+    CustomerID,
+    BranchID,
+    AccountTypeID,
+    SortCode,
+    AccountNumber,
+    OpenDate,
+    CloseDate,
+    Status,
+    CurrentBalance,
+    Currency
+  FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+  WHERE AccountID IN ('6', '8', '9', '10', '11', '12', '13')
+),
+paired AS (
+  SELECT
+    old.AccountID,
+    old AS old_record,
+    new1 AS new_record
+  FROM versions old
+  JOIN versions new1
+    ON old.AccountID = new1.AccountID
+   AND old.version_number = 1
+   AND new1.version_number = 2
+)
+SELECT
+  AccountID,
+  ARRAY_TO_STRING(
+    ARRAY(
+      SELECT column_name
+      FROM UNNEST([
+        STRUCT('CustomerID' AS column_name, old_record.CustomerID IS DISTINCT FROM new_record.CustomerID AS changed),
+        STRUCT('BranchID', old_record.BranchID IS DISTINCT FROM new_record.BranchID),
+        STRUCT('AccountTypeID', old_record.AccountTypeID IS DISTINCT FROM new_record.AccountTypeID),
+        STRUCT('SortCode', old_record.SortCode IS DISTINCT FROM new_record.SortCode),
+        STRUCT('AccountNumber', old_record.AccountNumber IS DISTINCT FROM new_record.AccountNumber),
+        STRUCT('OpenDate', old_record.OpenDate IS DISTINCT FROM new_record.OpenDate),
+        STRUCT('CloseDate', old_record.CloseDate IS DISTINCT FROM new_record.CloseDate),
+        STRUCT('Status', old_record.Status IS DISTINCT FROM new_record.Status),
+        STRUCT('CurrentBalance', old_record.CurrentBalance IS DISTINCT FROM new_record.CurrentBalance),
+        STRUCT('Currency', old_record.Currency IS DISTINCT FROM new_record.Currency)
+      ])
+      WHERE changed
+    ),
+    ', '
+  ) AS changed_columns
+FROM paired
+ORDER BY SAFE_CAST(AccountID AS INT64);
+
+
+
+################################################################################################################
+################    Replay for Day 1 Silver To Gold With out Day 2 run :
+################################################################################################################
+
+
+SELECT
+  version_number,
+  current_row_indicator,
+  COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+GROUP BY version_number, current_row_indicator
+ORDER BY version_number, current_row_indicator;
+
+-- version_number	current_row_indicator	records
+-- 1	N	10
+-- 1	Y	472
+-- 2	Y	10
+
+
+
+################################################################################################################
+################   RUN for Day 2 #############################
+################################################################################################################
+
+
+bash run_dataflow.sh 2
+
+Validate Day 2 file audit
+--Day 2 validations 
+SELECT
+  batch_day,
+  source_uri,
+  accepted,
+  rejected,
+  status
+FROM `retail-omkar-cli-org-dev.bankeva_control_test.file_audit`
+WHERE batch_day = 2
+ORDER BY source_uri;
+
+-- batch_day	source_uri	accepted	rejected	status
+-- 2	gs://hackathon_hyderabad_swara/day2/hack149_ws01_Source_data_EvalDB_Day2_Interleaved.txt	30	0	SUCCESS
+
+
+--Check Day 2 Bronze source distribution 
+SELECT
+  'accounts' AS table_name,
+  source_day,
+  COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.accounts`
+GROUP BY source_day
+
+UNION ALL
+
+SELECT
+  'customers',
+  source_day,
+  COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_bronze_test.customers`
+GROUP BY source_day
+
+ORDER BY table_name, source_day;
+
+-- table_name	source_day	records
+-- accounts	0	480
+-- accounts	1	15
+-- accounts	2	15
+-- customers	0	368
+-- customers	1	15
+-- customers	2	15
+
+
+################################################################################################################
+################  Cumulative Bronze records. #############################
+################################################################################################################
+
+
+Table	        Day 0	    Day 1	    Day 2	Total
+Accounts	      480	    15	        15	    510
+Customers.        368	    15	        15	    398
+Other 8 tables	  14,612   	0	        0	    14,612
+Total	          15,460	30	        30	    15,520
+
+The 15,520 total assumes the other eight Bronze tables remain unchanged.
+
+
+################################################################################################################
+################  Validate Day 2 Silver  #############################
+################################################################################################################
+
+
+
+SELECT
+  'accounts' AS table_name,
+  COUNT(*) AS total_records,
+  COUNT(DISTINCT AccountID) AS distinct_keys,
+  COUNTIF(source_day = 2) AS day2_records
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.accounts`
+
+UNION ALL
+
+SELECT
+  'customers',
+  COUNT(*),
+  COUNT(DISTINCT CustomerID),
+  COUNTIF(source_day = 2)
+FROM `retail-omkar-cli-org-dev.bankeva_silver_test.customers`;
+
+
+table_name	total_records	distinct_keys	day2_records
+accounts	484	484	15
+customers	372	372	15
+
+
+
+
+
+
+################################################################################################################
+################ Validate Gold SCD Type 2 after Day 2  #############################
+################################################################################################################
+
+SELECT
+  'accounts' AS table_name,
+  version_number,
+  current_row_indicator,
+  COUNT(*) AS records
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+GROUP BY version_number, current_row_indicator
+
+UNION ALL
+
+SELECT
+  'customers',
+  version_number,
+  current_row_indicator,
+  COUNT(*)
+FROM `retail-omkar-cli-org-dev.bankeva_gold_test.customers`
+GROUP BY version_number, current_row_indicator
+
+ORDER BY table_name, version_number, current_row_indicator;
+
+table_name	version_number	current_row_indicator	records
+accounts	1	N	10
+accounts	1	Y	474
+accounts	2	N	10
+accounts	3	Y	10
+customers	1	N	10
+customers	1	Y	362
+customers	2	N	10
+customers	3	Y	10
+
+WITH validation AS (
+  SELECT
+    'accounts' AS table_name,
+    COUNT(*) AS total_gold_rows,
+    COUNTIF(current_row_indicator = 'Y') AS current_rows,
+    COUNTIF(current_row_indicator = 'N') AS historical_rows,
+    COUNT(DISTINCT IF(current_row_indicator = 'Y', AccountID, NULL)) AS distinct_current_keys
+  FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+
+  UNION ALL
+
+  SELECT
+    'customers',
+    COUNT(*),
+    COUNTIF(current_row_indicator = 'Y'),
+    COUNTIF(current_row_indicator = 'N'),
+    COUNT(DISTINCT IF(current_row_indicator = 'Y', CustomerID, NULL))
+  FROM `retail-omkar-cli-org-dev.bankeva_gold_test.customers`
+)
+SELECT
+  *,
+  current_rows - distinct_current_keys AS duplicate_current_rows
+FROM validation;
+
+################################################################################################################
+
+table_name	total_gold_rows	current_rows	historical_rows	distinct_current_keys	duplicate_current_rows
+accounts	504	484	20	484	0
+customers	392	372	20	372	0
+
+################################################################################################################
+
+
+Final Validations : 
+
+WITH versions AS (
+  SELECT
+    AccountID,
+    version_number,
+    current_row_indicator,
+    row_effective_date,
+    row_expiry_date,
+    LEAD(row_effective_date) OVER (
+      PARTITION BY AccountID
+      ORDER BY version_number
+    ) AS next_effective_date
+  FROM `retail-omkar-cli-org-dev.bankeva_gold_test.accounts`
+)
+SELECT
+  AccountID,
+  version_number,
+  current_row_indicator,
+  row_effective_date,
+  row_expiry_date,
+  next_effective_date,
+  CASE
+    WHEN next_effective_date IS NOT NULL
+         AND row_expiry_date = next_effective_date
+      THEN 'PASS'
+    WHEN next_effective_date IS NULL
+         AND current_row_indicator = 'Y'
+         AND row_expiry_date = TIMESTAMP '9999-12-31 23:59:59 UTC'
+      THEN 'PASS'
+    ELSE 'FAIL'
+  END AS scd2_validation
+FROM versions
+WHERE AccountID IN (
+  '4','5','6','7','8','9','10','11','12','13'
+)
+ORDER BY SAFE_CAST(AccountID AS INT64), version_number;
+
+Results : 
+
+AccountID	version_number	current_row_indicator	row_effective_date	row_expiry_date	next_effective_date	scd2_validation
+4	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+4	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+4	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+5	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+5	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+5	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+6	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+6	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+6	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+7	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+7	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+7	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+8	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+8	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+8	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+9	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+9	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+9	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+10	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+10	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+10	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+11	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+11	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+11	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+12	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+12	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+12	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
+13	1	N	2026-10-24 09:27:30.238719 UTC	2026-10-24 09:51:15.782156 UTC	2026-10-24 09:51:15.782156 UTC	PASS
+13	2	N	2026-10-24 09:51:15.782156 UTC	2026-10-24 10:31:15.813022 UTC	2026-10-24 10:31:15.813022 UTC	PASS
+13	3	Y	2026-10-24 10:31:15.813022 UTC	9999-12-31 23:59:59.000000 UTC		PASS
