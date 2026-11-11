@@ -1,0 +1,32 @@
+
+gcp:
+  project_id: retail-omkar-cli-org-dev
+  region: us-central1
+
+storage:
+  source_bucket: hackathon_hyderabad_swara
+  quarantine_bucket: bankeva-quarantine-retail-omkar-cli-org-dev
+  code_prefix: gs://hackathon_hyderabad_swara/airflow/code
+  dataproc_code_prefix: gs://hack_1/scripts
+  dataflow_temp: gs://hackathon_hyderabad_swara/dataflow/temp
+  dataflow_staging: gs://hackathon_hyderabad_swara/dataflow/staging
+
+bigquery:
+  bronze_dataset: hack_bronze
+  silver_dataset: hack_silver
+  gold_dataset: hack_gold
+  control_dataset: bankeva_control
+
+dataproc:
+  cluster_name: cluster-silver-test
+
+scripts:
+  beam_ingestion: ingestion_dataflow.py
+  bronze_to_silver: scripts_bronze_silver_updated_with_dataset.py
+  silver_to_gold: silver_to_gold_all_10_scd2_cleanup.py
+  beam_requirements: requirements_dataflow.txt
+
+pipeline:
+  default_day: 2
+  retries: 1
+  retry_delay_minutes: 5
